@@ -71,7 +71,7 @@ class JasperPHP
         return $this;
     }
 
-    public function process($input_file, $output_file = false, $format = ["pdf"], $parameters = [], $db_connection = [], $background = true, $redirect_output = true)
+    public function process($input_file, $output_file = false, $format = ["pdf"], $parameters = [], $dataSource = '', $dataSourceParams = [], $background = true, $redirect_output = true)
     {
         if (is_null($input_file) || empty($input_file))
             throw new \Exception("No input file", 1);
@@ -86,52 +86,14 @@ class JasperPHP
                 throw new \Exception("Invalid format!", 1);
         }
 
-        $command = $this->executable;
-
-        $command .= " pr ";
-
-        $command .= $input_file;
-
-        if ($output_file !== false)
-            $command .= " -o " . $output_file;
-
-        if (is_array($format))
-            $command .= " -f " . join(" ", $format);
-        else
-            $command .= " -f " . $format;
-
-        // Resources dir
-        $command .= " -r " . $this->resourceDirectory;
-
-        if (count($parameters) > 0) {
-            $command .= " -P";
-            foreach ($parameters as $key => $value) {
-                $command .= " " . $key . "=" . $value;
-            }
-        }
-
-        if (count($db_connection) > 0) {
-            $command .= " -t " . $db_connection['driver'];
-            $command .= " -u " . $db_connection['username'];
-
-            if (isset($db_connection['password']) && !empty($db_connection['password']))
-                $command .= " -p " . $db_connection['password'];
-
-            if (isset($db_connection['host']) && !empty($db_connection['host']))
-                $command .= " -H " . $db_connection['host'];
-
-            if (isset($db_connection['database']) && !empty($db_connection['database']))
-                $command .= " -n " . $db_connection['database'];
-
-            if (isset($db_connection['port']) && !empty($db_connection['port']))
-                $command .= " --db-port " . $db_connection['port'];
-
-            if (isset($db_connection['jdbc_driver']) && !empty($db_connection['jdbc_driver']))
-                $command .= " --db-driver " . $db_connection['jdbc_driver'];
-
-            if (isset($db_connection['jdbc_url']) && !empty($db_connection['jdbc_url']))
-                $command .= " --db-url " . $db_connection['jdbc_url'];
-        }
+        $cb = new CommandBuilder($this->executable);
+        $command = $cb->input($input_file)
+            ->output($output_file)
+            ->format($format)
+            ->resourcePath($this->resourceDirectory)
+            ->addParams($parameters)
+            ->dataSource($dataSource)
+            ->query($dataSourceParams)->getCommand();
 
         $this->redirectOutput = $redirect_output;
         $this->background = $background;
