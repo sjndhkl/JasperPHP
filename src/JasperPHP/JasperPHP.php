@@ -21,12 +21,13 @@ class JasperPHP
     public function jasperPhpInit($params = [])
     {
         $this->initParams($params);
+
         return $this;
     }
 
     public function initParams(array $params = [])
     {
-        if(!empty($params)) {
+        if (!empty($params)) {
             extract($params);
         }
 
@@ -40,9 +41,9 @@ class JasperPHP
     {
         $jasperPhpObject = new self();
 
-        $method = "jasperPhp".ucwords($method);
+        $method = "jasperPhp" . ucwords($method);
 
-        if(!method_exists($jasperPhpObject, $method)) {
+        if (!method_exists($jasperPhpObject, $method)) {
             throw new \Exception("Invalid method!");
         }
 
@@ -144,7 +145,15 @@ class JasperPHP
         return $this->theCommand;
     }
 
-    public function execute($run_as_user = false)
+    public function mustRun($run_as_user = false)
+    {
+        $this->background = false;
+        $this->execute($run_as_user);
+
+        return $this;
+    }
+
+    private function execute($run_as_user = false)
     {
         if ($this->redirectOutput && !$this->windows)
             $this->theCommand .= " > /dev/null 2>&1";
@@ -164,5 +173,13 @@ class JasperPHP
             throw new \Exception("There was and error executing the report! Time to check the logs!", 1);
 
         return $output;
+    }
+
+    public function run($run_as_user = false)
+    {
+        $this->background = true;
+        $this->execute($run_as_user);
+
+        return $this;
     }
 }
