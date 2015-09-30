@@ -109,6 +109,11 @@ class CommandBuilder
                 if(isset($query) && !empty($query))
                     $this->command .=" --xml-xpath ".$query;
 
+                if(isset($xmlUrl) && !empty($xmlUrl)) {
+                    $dataFile = '/tmp/xml-'.time().".xml";
+                    @file_put_contents($dataFile, @file_get_contents($xmlUrl));
+                }
+
                 break;
             case 'json':
                 if(isset($query) && !empty($query))
@@ -130,7 +135,7 @@ class CommandBuilder
         if(count($this->parameters) > 0) {
             $this->command .=" -P";
             foreach ($this->parameters as $key => $value) {
-                $this->command .= " " . $key . "=" . $value;
+                $this->command .= " " . $key . "=\"" . $value."\"";
             }
         }
         return $this->command;
