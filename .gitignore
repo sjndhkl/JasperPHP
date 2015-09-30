@@ -2,3 +2,5 @@
 src/.DS_Store
 phpunit.phar
 .idea/
+src/JasperStarter/docs
+src/JasperStarter/examples
