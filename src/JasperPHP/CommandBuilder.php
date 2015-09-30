@@ -114,6 +114,11 @@ class CommandBuilder
                     @file_put_contents($dataFile, @file_get_contents($xmlUrl));
                 }
 
+                if(isset($xmlString) && !empty($xmlString)) {
+                    $dataFile = '/tmp/xml-'.time().".xml";
+                    @file_put_contents($dataFile, $xmlString);
+                }
+
                 break;
             case 'json':
                 if(isset($query) && !empty($query))
