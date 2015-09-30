@@ -87,24 +87,18 @@ class JasperPHP
         }
 
         $cb = new CommandBuilder($this->executable);
-        $command = $cb->input($input_file)
+        $this->theCommand = $cb->input($input_file)
             ->output($output_file)
             ->format($format)
             ->resourcePath($this->resourceDirectory)
             ->addParams($parameters)
             ->dataSource($dataSource)
-            ->query($dataSourceParams)->getCommand();
+            ->query($dataSourceParams);
 
         $this->redirectOutput = $redirect_output;
         $this->background = $background;
-        $this->theCommand = $command;
 
         return $this;
-    }
-
-    public function output()
-    {
-        return $this->theCommand;
     }
 
     public function mustRun($run_as_user = false)
@@ -117,24 +111,38 @@ class JasperPHP
 
     private function execute($run_as_user = false)
     {
+        $tempFile = $this->theCommand->getTempFile();
+        $command = $this->command();
+
         if ($this->redirectOutput && !$this->windows)
-            $this->theCommand .= " > /dev/null 2>&1";
+            $command .= " > /dev/null 2>&1";
 
         if ($this->background && !$this->windows)
-            $this->theCommand .= " &";
+            $command .= " &";
 
         if ($run_as_user !== false && strlen($run_as_user > 0) && !$this->windows)
-            $this->theCommand = "su -u " . $run_as_user . " -c \"" . $this->theCommand . "\"";
+            $command = "su -u " . $run_as_user . " -c \"" . $command . "\"";
 
         $output = [];
         $return_var = 0;
 
-        exec($this->theCommand, $output, $return_var);
+        exec($command, $output, $return_var);
+
+        if($tempFile) {
+            @unlink($tempFile);
+        }
 
         if ($return_var != 0)
             throw new \Exception("There was and error executing the report! Time to check the logs!", 1);
 
+
+
         return $output;
+    }
+
+    public function command()
+    {
+        return $this->theCommand->getCommand();
     }
 
     public function run($run_as_user = false)

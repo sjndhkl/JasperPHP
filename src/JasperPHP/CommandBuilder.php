@@ -6,10 +6,16 @@ class CommandBuilder
     private $command = '';
     private $dataSourceType = '';
     private $parameters = [];
+    private $tempFile = false;
 
     public function __construct($executable)
     {
         $this->command = $executable;
+    }
+
+    public function getTempFile()
+    {
+        return $this->tempFile;
     }
 
 
@@ -110,12 +116,12 @@ class CommandBuilder
                     $this->command .=" --xml-xpath ".$query;
 
                 if(isset($xmlUrl) && !empty($xmlUrl)) {
-                    $dataFile = '/tmp/xml-'.time().".xml";
+                    $dataFile = $this->tempFile = '/tmp/xml-'.time().".xml";
                     @file_put_contents($dataFile, @file_get_contents($xmlUrl));
                 }
 
                 if(isset($xmlString) && !empty($xmlString)) {
-                    $dataFile = '/tmp/xml-'.time().".xml";
+                    $dataFile = $this->tempFile = '/tmp/xml-'.time().".xml";
                     @file_put_contents($dataFile, $xmlString);
                 }
 
