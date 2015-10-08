@@ -9,7 +9,6 @@ class JasperPHP
     protected $background;
     protected $windows = false;
     protected $formats;
-    protected $resourceDirectory;
 
     function __construct()
     {
@@ -34,7 +33,6 @@ class JasperPHP
         $this->executable = isset($executable) ? $executable : __DIR__ . "/../JasperStarter/bin/jasperstarter";
         $this->formats = isset($formats) ? $formats : ['pdf', 'rtf', 'xls', 'xlsx', 'docx', 'odt', 'ods', 'pptx',
             'csv', 'html', 'xhtml', 'xml', 'jrprint'];
-        $this->resourceDirectory = isset($resourceDirectory) ? $resourceDirectory : __DIR__ . "/../../../../../";
     }
 
     public static function __callStatic($method, $parameters)
@@ -90,7 +88,6 @@ class JasperPHP
         $this->theCommand = $cb->input($input_file)
             ->output($output_file)
             ->format($format)
-            ->resourcePath($this->resourceDirectory)
             ->addParams($parameters)
             ->dataSource($dataSource)
             ->query($dataSourceParams);
