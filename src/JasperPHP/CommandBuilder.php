@@ -115,16 +115,6 @@ class CommandBuilder
                 if(isset($query) && !empty($query))
                     $this->command .=" --xml-xpath ".$query;
 
-                if(isset($xmlUrl) && !empty($xmlUrl)) {
-                    $dataFile = $this->tempFile = '/tmp/xml-'.time().".xml";
-                    @file_put_contents($dataFile, @file_get_contents($xmlUrl));
-                }
-
-                if(isset($xmlString) && !empty($xmlString)) {
-                    $dataFile = $this->tempFile = '/tmp/xml-'.time().".xml";
-                    @file_put_contents($dataFile, $xmlString);
-                }
-
                 break;
             case 'json':
                 if(isset($query) && !empty($query))
